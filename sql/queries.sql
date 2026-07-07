@@ -1,3 +1,4 @@
+-- Main dataset
 SELECT	o.order_id,
 		o.order_purchase_t,
         strftime('%Y-%m', o.order_purchase_t) AS purch_mon,
@@ -16,3 +17,13 @@ LEFT JOIN product_category_name_translation t ON t.product_category = pr.product
 LEFT JOIN olist_order_reviews_dataset r USING(order_id)
 LEFT JOIN olist_order_payments_dataset p USING(order_id)
 WHERE o.order_status = 'delivered';
+
+--Main dataset: position of delivered orders with context. Monthly revenue  and count of orders
+SELECT	strftime('%Y-%m', o.order_purchase_t) AS purch_mon,
+		ROUND(SUM(i.price), 2) AS revenue,
+        COUNT(DISTINCT o.order_id) AS orders
+FROM olist_order_items_dataset i
+JOIN olist_orders_dataset o USING(order_id)
+WHERE o.order_status = 'delivered'
+GROUP BY purch_mon
+ORDER BY purch_mon;
